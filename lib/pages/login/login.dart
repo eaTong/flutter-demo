@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterdemo/framework/application.dart';
+import 'package:flutterdemo/framework/request.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,11 +14,14 @@ class LoginState extends State<LoginPage> {
   String account;
   String password;
 
-  _validateAndSubmit() {
+  _validateAndSubmit() async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      print(account);
-      print(password);
+      Map result = await request('/api/user/login',
+          data: {'account': account, 'password': password});
+      if (result != null) {
+        Application.router.navigateTo(context, '/home',replace:true);
+      }
     } else {
       _formKey.currentState.save();
     }
