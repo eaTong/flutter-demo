@@ -1,13 +1,12 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dio/dio.dart';
 import 'package:flutterdemo/framework/config.dart';
 import 'package:flutterdemo/framework/private_cookie_manager.dart';
-import 'package:flutterdemo/framework/toast.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 
 Dio dio = Dio();
 
-Future<Map> request(String url,
+Future<Object> request(String url,
     {Options options, Map data, String errorMessage}) async {
   CookieJar cookieJar = CookieJar();
   dio.interceptors.add(PrivateCookieManager(cookieJar));
@@ -28,7 +27,7 @@ Future<Map> request(String url,
     if (response.data['success']) {
       return response.data['data'];
     }
-    showToast(errorMessage ?? response.data['message']);
+    BotToast.showText(text:errorMessage ?? response.data['message']);
     return null;
   } on DioError catch (e) {
     String msg;
@@ -44,7 +43,7 @@ Future<Map> request(String url,
         print('error');
         print(e);
     }
-    showToast(msg);
+    BotToast.showText(text:msg);
     return null;
   }
 }

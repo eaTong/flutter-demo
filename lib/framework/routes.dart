@@ -1,5 +1,6 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutterdemo/pages/contact/contact_form.dart';
 import 'package:flutterdemo/pages/detail/detail.dart';
 import 'package:flutterdemo/pages/home/home.dart';
 import 'package:flutterdemo/pages/login/login.dart';
@@ -18,6 +19,10 @@ class Routes {
     router.define('/login', handler: Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {
       return LoginPage();
+    }));
+    router.define('/contact/form/:operate', handler: Handler(
+        handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+      return ContactFormPage();
     }));
     router.define('/detail', handler: Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {

@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +21,15 @@ class AppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final app = MaterialApp(
+    final app = BotToastInit(
+        child: MaterialApp(
       title: 'Flutter Demo',
+      navigatorObservers: [BotToastNavigatorObserver()],
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
       onGenerateRoute: Application.router.generator,
-    );
+    ));
     return app;
   }
 }
