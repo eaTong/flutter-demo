@@ -20,9 +20,11 @@ class Routes {
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {
       return LoginPage();
     }));
-    router.define('/contact/form/:operate', handler: Handler(
+    router.define('/contact/form/:operate/:id', handler: Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-      return ContactFormPage();
+      return ContactFormPage(
+          operate: params['operate'][0],
+          id: int.parse(params['id'][0] == 'null' ? '0' : params['id'][0]));
     }));
     router.define('/detail', handler: Handler(
         handlerFunc: (BuildContext context, Map<String, List<String>> params) {

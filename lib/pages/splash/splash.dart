@@ -1,5 +1,12 @@
+import 'dart:io';
+
+import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterdemo/entities/device_info.dart';
 import 'package:flutterdemo/framework/application.dart';
+import 'package:flutterdemo/framework/utils.dart';
+import 'package:flutterdemo/stores/app_store.dart';
+import 'package:provider/provider.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -9,6 +16,25 @@ class SplashPage extends StatefulWidget {
 }
 
 class SplashState extends State<SplashPage> {
+  AppStore _appStore;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _appStore = Provider.of<AppStore>(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    autoLogin();
+  }
+
+  autoLogin() async {
+    TotalDeviceInfo deviceInfo = await getDeviceInfo();
+    await _appStore.quickLogin(deviceInfo.deviceId , context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,14 +49,6 @@ class SplashState extends State<SplashPage> {
                   style: TextStyle(
                       fontSize: 40, decoration: null, color: Colors.blue),
                 )),
-                Container(
-                  child: RaisedButton(
-                    onPressed: () => Application.router.navigateTo(context, '/login',replace: true),
-                    child: Text('开始'),
-                    color: Colors.blue,
-                    textColor: Colors.white,
-                  ),
-                )
               ]),
         ),
       ),

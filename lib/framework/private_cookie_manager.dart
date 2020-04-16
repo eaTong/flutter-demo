@@ -15,7 +15,6 @@ class PrivateCookieManager extends CookieManager {
   Future onError(DioError err) async => _saveCookies(err.response);
 
   _saveCookies(Response response) {
-    print("_saveCookies response = $response");
     if (response != null && response.headers != null) {
       List<String> cookies = response.headers[HttpHeaders.setCookieHeader];
       if (cookies != null) {

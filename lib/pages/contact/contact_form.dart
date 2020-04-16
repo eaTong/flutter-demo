@@ -5,13 +5,18 @@ import 'package:flutterdemo/framework/request.dart';
 import 'package:intl/intl.dart';
 
 class ContactFormPage extends StatefulWidget {
+  final String operate;
+  final int id;
+
+  ContactFormPage({this.operate, this.id});
+
   @override
   State<StatefulWidget> createState() {
-    return LoginState();
+    return ContactState(operate: operate, id: id);
   }
 }
 
-class LoginState extends State<ContactFormPage> {
+class ContactState extends State<ContactFormPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   String name;
   String telephone;
@@ -19,6 +24,29 @@ class LoginState extends State<ContactFormPage> {
   String description;
   DateTime birthday;
   String avatar;
+  final String operate;
+  final int id;
+
+  ContactState({this.operate, this.id});
+
+  @override
+  initState() {
+    super.initState();
+    if (this.operate == 'edit') {
+      getContactDetail();
+    }
+  }
+
+  getContactDetail() async {
+    Map detail = await request('/api/contact/detail', data: {'id': id});
+
+/*    detail.forEach((key, value) {
+      _formKey.currentState.setAttributeValue('name', 'value');
+    });*/
+    setState(() {
+      _formKey.currentState.setAttributeValue('name', 'value');
+    });
+  }
 
   _validateAndSubmit() async {
     if (_formKey.currentState.saveAndValidate()) {
@@ -26,8 +54,7 @@ class LoginState extends State<ContactFormPage> {
       Map value = _formKey.currentState.value;
       value['birthday'] = value['birthday'].toString();
       value['lastContactTime'] = value['lastContactTime'].toString();
-      Map result =
-          await request('/api/contact/add', data:value);
+      Map result = await request('/api/contact/add', data: value);
       if (result != null) {
         Application.router.pop(context);
       }
@@ -65,7 +92,7 @@ class LoginState extends State<ContactFormPage> {
                       ],
                     ),
                     FormBuilderTextField(
-                      attribute: 'telephone',
+                      attribute: 'phone',
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(labelText: "电话"),
                     ),
@@ -90,7 +117,7 @@ class LoginState extends State<ContactFormPage> {
                           DropdownMenuItem(value: 1, child: Text("女"))
                         ]),
                     FormBuilderTextField(
-                      attribute: 'remark',
+                      attribute: 'description',
                       decoration: InputDecoration(labelText: "备注"),
                       maxLines: 5,
                       minLines: 3,
