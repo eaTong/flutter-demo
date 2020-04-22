@@ -22,12 +22,12 @@ class SplashState extends State<SplashPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _appStore = Provider.of<AppStore>(context);
+    autoLogin();
   }
 
   @override
   void initState() {
     super.initState();
-    autoLogin();
   }
 
   autoLogin() async {

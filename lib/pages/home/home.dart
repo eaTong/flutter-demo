@@ -52,8 +52,6 @@ class HomeState extends State<HomePage> {
   }
 
   getContacts({int page = 0}) async {
-    print('aha....');
-    print(_appStore.loginUser.toJson());
     pageIndex = page;
     Map contracts =
         await request('/api/contact/get', data: {'pageIndex': page});

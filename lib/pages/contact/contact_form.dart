@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutterdemo/entities/contact.dart';
 import 'package:flutterdemo/framework/application.dart';
 import 'package:flutterdemo/framework/request.dart';
 import 'package:intl/intl.dart';
@@ -18,56 +19,79 @@ class ContactFormPage extends StatefulWidget {
 
 class ContactState extends State<ContactFormPage> {
   final _formKey = GlobalKey<FormBuilderState>();
-  String name;
-  String telephone;
-  int gender;
-  String description;
-  DateTime birthday;
-  String avatar;
   final String operate;
   final int id;
+  final Contact contact;
+  final Map<String, TextEditingController> controllerMapping = {};
 
-  ContactState({this.operate, this.id});
+  ContactState({this.operate, this.id, this.contact});
 
   @override
-  initState() {
+  void initState() {
     super.initState();
+    registerController('name');
+    registerController('phone');
+    registerController('lastContactDate');
+    registerController('birthday');
+    registerController('description');
+  }
+
+  @override
+  didChangeDependencies() async {
+    super.didChangeDependencies();
     if (this.operate == 'edit') {
-      getContactDetail();
+      await getContactDetail();
     }
   }
 
   getContactDetail() async {
     Map detail = await request('/api/contact/detail', data: {'id': id});
-
-/*    detail.forEach((key, value) {
-      _formKey.currentState.setAttributeValue('name', 'value');
-    });*/
-    setState(() {
-      _formKey.currentState.setAttributeValue('name', 'value');
-    });
+    updateValues(detail);
   }
 
   _validateAndSubmit() async {
     if (_formKey.currentState.saveAndValidate()) {
       _formKey.currentState.save();
       Map value = _formKey.currentState.value;
-      value['birthday'] = value['birthday'].toString();
-      value['lastContactTime'] = value['lastContactTime'].toString();
-      Map result = await request('/api/contact/add', data: value);
-      if (result != null) {
-        Application.router.pop(context);
+      value['birthday'] = value['birthday'].toString() ?? null;
+      value['lastContactDate'] = value['lastContactDate'].toString() ?? null;
+      if (operate == 'edit') {
+        value['id'] = id;
+        var result = await request('/api/contact/update', data: value);
+        if (result != null) {
+          Application.router.pop(context);
+        }
+      } else {
+        Map result = await request('/api/contact/add', data: value);
+        if (result != null) {
+          Application.router.pop(context);
+        }
       }
-    } else {
-      _formKey.currentState.save();
     }
+  }
+
+  registerController(fieldName) {
+    controllerMapping[fieldName] = TextEditingController();
+  }
+
+  getController(String fieldName) {
+    return controllerMapping[fieldName];
+  }
+
+  updateValues(Map values) {
+    values.forEach((key, value) {
+      var controller = controllerMapping[key];
+      if (controller != null) {
+        controller.text = values[key];
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('新增联系人'),
+          title: Text(operate == 'edit' ? '编辑联系人' : '新增联系人'),
           actions: <Widget>[
             FlatButton(
               textColor: Colors.white,
@@ -86,6 +110,7 @@ class ContactState extends State<ContactFormPage> {
                   children: <Widget>[
                     FormBuilderTextField(
                       attribute: 'name',
+                      controller: getController('name'),
                       decoration: InputDecoration(labelText: "姓名"),
                       validators: [
                         FormBuilderValidators.required(errorText: '名字还是填一下吧')
@@ -93,11 +118,13 @@ class ContactState extends State<ContactFormPage> {
                     ),
                     FormBuilderTextField(
                       attribute: 'phone',
+                      controller: getController('phone'),
                       keyboardType: TextInputType.phone,
                       decoration: InputDecoration(labelText: "电话"),
                     ),
                     FormBuilderDateTimePicker(
-                      attribute: "lastContactTime",
+                      attribute: "lastContactDate",
+                      controller: getController('lastContactDate'),
                       inputType: InputType.date,
                       format: DateFormat("yyyy-MM-dd"),
                       decoration: InputDecoration(labelText: "最后联系日期"),
@@ -105,6 +132,7 @@ class ContactState extends State<ContactFormPage> {
                     FormBuilderDateTimePicker(
                       attribute: "birthday",
                       inputType: InputType.date,
+                      controller: getController('birthday'),
                       format: DateFormat("yyyy-MM-dd"),
                       decoration: InputDecoration(labelText: "生日"),
                     ),
@@ -118,6 +146,7 @@ class ContactState extends State<ContactFormPage> {
                         ]),
                     FormBuilderTextField(
                       attribute: 'description',
+                      controller: getController('description'),
                       decoration: InputDecoration(labelText: "备注"),
                       maxLines: 5,
                       minLines: 3,

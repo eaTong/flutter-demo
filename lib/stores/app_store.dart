@@ -16,7 +16,10 @@ abstract class _AppStore with Store {
 
   @action
   Future<Map> quickLogin(String deviceId , context) async {
+    print('aha ...login');
+    print(deviceId);
     Map user = await request('/api/pub/quickLogin', data: {'uuid': deviceId});
+    print(user);
     if(user!= null){
       loginUser = User.fromJson(user);
       Application.router.navigateTo(context, '/home', replace: true);
